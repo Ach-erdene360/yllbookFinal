@@ -5,6 +5,15 @@
   "references": [
     {
       "path": "./apps/workspace"
+    },
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./libs/contact"
+    },
+    {
+      "path": "./libs/config"
     }
   ]
 }

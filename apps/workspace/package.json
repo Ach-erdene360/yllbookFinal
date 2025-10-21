@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "next": "~15.2.4",
+    "esbuild": "0.25.10",
+    "fastify": "5.6.1",
+    "next": "^15.5.4",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   }

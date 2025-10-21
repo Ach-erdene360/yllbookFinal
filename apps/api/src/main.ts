@@ -5,7 +5,7 @@ import { createContext } from './app/trcp/context';
 import { appRouter, type AppRouter } from './app/trcp/router';
 import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 
-const host = process.env.HOST ?? 'localhost';
+const host = '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 
 const server = Fastify({

@@ -68,7 +68,7 @@ export default function EditProfilePage() {
     });
 
     // Категориуд авах
-    fetch('http://localhost:3001/trpc/getAllCategories')
+    fetch('http://34.228.14.113:3001/trpc/getAllCategories')
       .then(res => res.json())
       .then(data => setCategories(data.result.data || []));
   }, [router]);
@@ -103,7 +103,7 @@ export default function EditProfilePage() {
         updateData.password = formData.password;
       }
 
-      const response = await fetch('http://localhost:3001/trpc/updateBusiness', {
+      const response = await fetch('http://34.228.14.113:3001/trpc/updateBusiness', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

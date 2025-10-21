@@ -38,7 +38,7 @@ export default function BusinessDetailPage() {
   useEffect(() => {
     async function fetchBusiness() {
       try {
-        const response = await fetch(`http://34.228.14.113:3001/trpc/getBusinessById?input=${params.id}`);
+        const response = await fetch(`http://3.81.242.223:3001/trpc/getBusinessById?input=${params.id}`);
         const data = await response.json();
         setBusiness(data.result.data);
       } catch (error) {

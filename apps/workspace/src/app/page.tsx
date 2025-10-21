@@ -41,7 +41,7 @@ export default function HomePage() {
 
   const fetchTRPC = async (procedure: string, input?: any) => {
     try {
-      let url = `http://localhost:3001/trpc/${procedure}`;
+      let url = `http://34.228.14.113:3001/trpc/${procedure}`;
       if (input) {
         url += `?input=${encodeURIComponent(JSON.stringify(input))}`;
       }

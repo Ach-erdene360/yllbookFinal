@@ -16,7 +16,7 @@ const server = Fastify({
 server.register(cors, {
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com']  
-    : ['http://13.220.85.172/:3000', 'http://13.220.85.172/:3001', 'http://127.0.0.1:3000'],
+    : ['http://3.81.242.223:3000', 'http://3.81.242.223:3001', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [

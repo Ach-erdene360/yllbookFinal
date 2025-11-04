@@ -38,7 +38,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/app/page.tsx"  ],
   "exclude": [
     "out-tsc",
     "dist",

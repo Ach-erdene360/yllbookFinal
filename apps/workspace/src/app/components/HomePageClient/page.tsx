@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BusinessCard from '../BusinessCard';
 
 interface Category {
@@ -76,6 +76,42 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
       setLoading(false);
     }
   };
+
+  // Periodic silent refresh every 60 seconds to demonstrate background updates.
+  // This does not toggle the loading UI, it only updates the data and logs to console.
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        // eslint-disable-next-line no-console
+        console.log('[PeriodicRefresh] fetching latest data at', new Date().toISOString());
+        const [categoriesResponse, businessesResponse] = await Promise.all([
+          fetch('http://3.81.242.223:3001/trpc/getAllCategories'),
+          fetch('http://3.81.242.223:3001/trpc/getAllBusinessesSimple')
+        ]);
+
+        if (!categoriesResponse.ok || !businessesResponse.ok) {
+          // eslint-disable-next-line no-console
+          console.warn('[PeriodicRefresh] backend returned non-ok status');
+          return;
+        }
+
+        const categoriesData = await categoriesResponse.json();
+        const businessesData = await businessesResponse.json();
+
+        setCategories(categoriesData.result.data);
+        setBusinesses(businessesData.result.data);
+        setLastUpdated(new Date().toISOString());
+
+        // eslint-disable-next-line no-console
+        console.log('data updated', new Date().toISOString());
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('error fetch data', err);
+      }
+    }, 60000); // 60s
+
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredAndSortedBusinesses = businesses
     .filter(business => {

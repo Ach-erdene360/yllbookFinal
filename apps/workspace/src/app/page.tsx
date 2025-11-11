@@ -28,10 +28,10 @@ interface Business {
 async function fetchBackendData() {
   try {
     const [categoriesResponse, businessesResponse] = await Promise.all([
-      fetch('http://3.81.242.223:3001/trpc/getAllCategories', {
+      fetch('http://3.81.242.223:3001/cached/categories', {
         next: { revalidate: 60 } 
       }),
-      fetch('http://3.81.242.223:3001/trpc/getAllBusinessesSimple', {
+      fetch('http://3.81.242.223:3001/cached/businesses', {
         next: { revalidate: 60 } 
       })
     ]);

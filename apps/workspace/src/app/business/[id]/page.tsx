@@ -1,7 +1,3 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-
 interface Business {
   id: number;
   name: string;
@@ -30,39 +26,36 @@ interface Business {
   };
 }
 
-export default function BusinessDetailPage() {
-  const params = useParams();
-  const [business, setBusiness] = useState<Business | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchBusiness() {
-      try {
-        const response = await fetch(`http://3.81.242.223:3001/trpc/getBusinessById?input=${params.id}`);
-        const data = await response.json();
-        setBusiness(data.result.data);
-      } catch (error) {
-        console.error('Error fetching business:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (params.id) {
-      fetchBusiness();
-    }
-  }, [params.id]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">Уншиж байна...</p>
-        </div>
-      </div>
-    );
+export async function generateStaticParams() {
+  try {
+    const response = await fetch('http://3.81.242.223:3001/trpc/getAllBusinessesSimple');
+    const data = await response.json();
+    const businesses = data.result.data || [];
+    
+    return businesses.slice(0, 10).map((business: Business) => ({
+      id: business.id.toString(),
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
   }
+}
+
+export const revalidate = 3600;
+
+async function getBusiness(id: string): Promise<Business | null> {
+  try {
+    const response = await fetch(`http://3.81.242.223:3001/trpc/getBusinessById?input=${id}`);
+    const data = await response.json();
+    return data.result.data;
+  } catch (error) {
+    console.error('Error fetching business:', error);
+    return null;
+  }
+}
+
+export default async function BusinessDetailPage({ params }: { params: { id: string } }) {
+  const business = await getBusiness(params.id);
 
   if (!business) {
     return (
@@ -247,7 +240,6 @@ export default function BusinessDetailPage() {
 
               <div className="lg:col-span-2">
                 <div className="space-y-6">
-       
                   <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
                     {business.type}
                   </div>
@@ -266,9 +258,8 @@ export default function BusinessDetailPage() {
                       <h3 className="text-sm font-medium text-gray-500 mb-1">Ангилал</h3>
                       <p className="text-gray-900 font-medium">{business.category?.name}</p>
                     </div>
-
-
                   </div>
+
                   {business.address && (
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900 mb-4">Байршил</h2>

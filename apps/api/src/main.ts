@@ -4,6 +4,7 @@ import cors from '@fastify/cors';
 import { createContext } from './app/trcp/context';
 import { appRouter, type AppRouter } from './app/trcp/router';
 import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
+import cachedRoutes from './app/routes/root';
 
 const host = '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
@@ -13,6 +14,7 @@ const server = Fastify({
   maxParamLength: 5000,
 });
 
+server.register(cachedRoutes); 
 server.register(cors, {
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com']  

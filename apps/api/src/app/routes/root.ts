@@ -4,10 +4,12 @@ import CacheHandler from '../lib/cacheHandler';
 const cache = new CacheHandler();
 
 export default async function (fastify: FastifyInstance) {
+  // Root endpoint
   fastify.get('/', async function () {
     return { message: 'Hello API fffff' };
   });
 
+  // Cached businesses endpoint
   fastify.get('/cached/businesses', async function (request, reply) {
     const key = 'all-businesses';
     const cached = await cache.get(key);
@@ -30,6 +32,7 @@ export default async function (fastify: FastifyInstance) {
     }
   });
 
+  // Cached categories endpoint
   fastify.get('/cached/categories', async function (request, reply) {
     const key = 'all-categories';
     const cached = await cache.get(key);
@@ -52,3 +55,4 @@ export default async function (fastify: FastifyInstance) {
     }
   });
 }
+

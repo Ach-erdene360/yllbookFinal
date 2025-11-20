@@ -14,7 +14,7 @@ const server = Fastify({
   maxParamLength: 5000,
 });
 
-server.register(cachedRoutes); 
+server.register(cachedRoutes);
 server.register(cors, {
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com']  

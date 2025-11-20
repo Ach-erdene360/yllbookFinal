@@ -8,7 +8,7 @@ import cachedRoutes from './app/routes/root';
 
 const host = '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
-
+const SERVER_IP = process.env.PUBLIC_SERVER_IP;
 const server = Fastify({
   logger: true,
   maxParamLength: 5000,
@@ -18,7 +18,7 @@ server.register(cachedRoutes);
 server.register(cors, {
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com']  
-    : ['http://3.81.242.223:3000', 'http://3.81.242.223:3001', 'http://127.0.0.1:3000'],
+    : [`http://${SERVER_IP}:3000`, `http://${SERVER_IP}:3001`, 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [

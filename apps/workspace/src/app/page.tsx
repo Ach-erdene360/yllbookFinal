@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import HomePageContent from '@/app/components/HomePageClient/page';
-
+const SERVER_IP = process.env.PUBLIC_SERVER_IP;
 interface Category {
   id: number;
   name: string;
@@ -28,10 +28,10 @@ interface Business {
 async function fetchBackendData() {
   try {
     const [categoriesResponse, businessesResponse] = await Promise.all([
-      fetch('http://3.81.242.223:3001/cached/categories', {
+      fetch(`http://${SERVER_IP}:3001/cached/categories`, {
         next: { revalidate: 60 } 
       }),
-      fetch('http://3.81.242.223:3001/cached/businesses', {
+      fetch(`http://${SERVER_IP}:3001/cached/businesses`, {
         next: { revalidate: 60 } 
       })
     ]);

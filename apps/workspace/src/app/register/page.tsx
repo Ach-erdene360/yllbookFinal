@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+const SERVER_IP = process.env.PUBLIC_SERVER_IP;
 interface Category {
   id: number;
   name: string;
@@ -26,7 +26,7 @@ export default function RegisterPage() {
   });
 
   useState(() => {
-    fetch('http://3.81.242.223:3001/trpc/getAllCategories')
+    fetch(`http://${SERVER_IP}:3001/trpc/getAllCategories`)
       .then(res => res.json())
       .then(data => setCategories(data.result.data || []));
   });
@@ -42,7 +42,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   try {
-    const response = await fetch('http://3.81.242.223:3001/trpc/createBusiness', {
+    const response = await fetch(`http://${SERVER_IP}:3001/trpc/createBusiness`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

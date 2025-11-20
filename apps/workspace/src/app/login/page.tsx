@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+const SERVER_IP = process.env.PUBLIC_SERVER_IP;
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://3.81.242.223:3001/trpc/loginBusiness', {
+      const response = await fetch(`http://${SERVER_IP}:3001/trpc/loginBusiness`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

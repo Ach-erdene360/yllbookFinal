@@ -1,3 +1,5 @@
+const SERVER_IP = process.env.PUBLIC_SERVER_IP;
+
 interface Business {
   id: number;
   name: string;
@@ -28,15 +30,24 @@ interface Business {
 
 export async function generateStaticParams() {
   try {
-    const response = await fetch('http://3.81.242.223:3001/trpc/getAllBusinessesSimple');
+    console.log('[SSG] Generating static params for first 10 businesses...');
+    const response = await fetch(`http://${SERVER_IP}:3001/trpc/getAllBusinessesSimple`, {
+      next: { revalidate: 3600 } 
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
     const businesses = data.result.data || [];
     
+    console.log(`[SSG] Generated ${businesses.slice(0, 10).length} static business pages`);
     return businesses.slice(0, 10).map((business: Business) => ({
       id: business.id.toString(),
     }));
   } catch (error) {
-    console.error('Error generating static params:', error);
+    console.error('[SSG] Error generating static params:', error);
     return [];
   }
 }
@@ -45,23 +56,52 @@ export const revalidate = 3600;
 
 async function getBusiness(id: string): Promise<Business | null> {
   try {
-    const response = await fetch(`http://3.81.242.223:3001/trpc/getBusinessById?input=${id}`);
+    console.log(`[DATA] Fetching FRESH business data for ID: ${id}`);
+    const response = await fetch(`http://${SERVER_IP}:3001/trpc/getBusinessById?input=${id}`, {
+      next: { 
+        revalidate: 3600,
+        tags: [`business-${id}`]
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
-    return data.result.data;
+    const business = data.result.data;
+    
+    console.log(`✅ [DATA] Successfully fetched business: ${business?.name}`);
+    return business;
   } catch (error) {
-    console.error('Error fetching business:', error);
+    console.error('[DATA] Error fetching business:', error);
     return null;
   }
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const business = await getBusiness(params.id);
+  
+  return {
+    title: business ? `${business.name} - Монголын бизнесийн лавлах` : 'Байгууллага олдсонгүй',
+    description: business?.description || 'Монголын бизнесийн мэдээлэл',
+  };
+}
+
 export default async function BusinessDetailPage({ params }: { params: { id: string } }) {
+  console.log(`[PAGE] Rendering business page for ID: ${params.id}`);
+  
   const business = await getBusiness(params.id);
 
   if (!business) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Байгууллага олдсонгүй</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Байгууллага олдсонгүй</h1>
+          <p className="text-gray-600">Таны хайсан байгууллагын мэдээлэл олдсонгүй.</p>
+          <div className="mt-4 text-sm text-gray-500">
+            <p>ID: {params.id}</p>
+          </div>
         </div>
       </div>
     );
@@ -142,6 +182,7 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
     }
   };
 
+  // Filter valid links
   const validLinks = business.links ? Object.entries(business.links)
     .filter(([key, value]) => value && value.trim() !== '')
     .map(([key, value]) => ({
@@ -154,6 +195,14 @@ export default async function BusinessDetailPage({ params }: { params: { id: str
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Debug info - remove in production */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
+          <div className="flex justify-between">
+            <span>🔄 SSG + On-demand Revalidation Active</span>
+            <span>ID: {params.id}</span>
+          </div>
+        </div>
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white">
             <h1 className="text-3xl font-bold">{business.name}</h1>

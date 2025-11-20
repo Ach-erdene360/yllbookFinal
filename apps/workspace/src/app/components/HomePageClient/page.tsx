@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import BusinessCard from '../BusinessCard';
 
 interface Category {
@@ -39,7 +39,6 @@ interface HomePageContentProps {
 export default function HomePageContent({ initialData }: HomePageContentProps) {
   const [businesses, setBusinesses] = useState<Business[]>(initialData.businesses);
   const [categories, setCategories] = useState<Category[]>(initialData.categories);
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -49,69 +48,31 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
   const [lastUpdated, setLastUpdated] = useState<string>(initialData.timestamp);
   const [error, setError] = useState<string | null>(initialData.error);
 
-  const refreshData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const [categoriesResponse, businessesResponse] = await Promise.all([
-        fetch('http://3.81.242.223:3001/trpc/getAllCategories'),
-        fetch('http://3.81.242.223:3001/trpc/getAllBusinessesSimple')
-      ]);
-
-      if (!categoriesResponse.ok || !businessesResponse.ok) {
-        throw new Error('Backend API request failed');
-      }
-
-      const categoriesData = await categoriesResponse.json();
-      const businessesData = await businessesResponse.json();
-
-      setCategories(categoriesData.result.data);
-      setBusinesses(businessesData.result.data);
-      setLastUpdated(new Date().toISOString());
-    } catch (err) {
-      setError('Шинэчлэлт амжилтгүй боллоо');
-      console.error('Error refreshing data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Periodic silent refresh every 60 seconds to demonstrate background updates.
-  // This does not toggle the loading UI, it only updates the data and logs to console.
   useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        // eslint-disable-next-line no-console
-        console.log('[PeriodicRefresh] fetching latest data at', new Date().toISOString());
-        const [categoriesResponse, businessesResponse] = await Promise.all([
-          fetch('http://3.81.242.223:3001/trpc/getAllCategories'),
-          fetch('http://3.81.242.223:3001/trpc/getAllBusinessesSimple')
-        ]);
-
-        if (!categoriesResponse.ok || !businessesResponse.ok) {
-          // eslint-disable-next-line no-console
-          console.warn('[PeriodicRefresh] backend returned non-ok status');
-          return;
-        }
-
-        const categoriesData = await categoriesResponse.json();
-        const businessesData = await businessesResponse.json();
-
-        setCategories(categoriesData.result.data);
-        setBusinesses(businessesData.result.data);
-        setLastUpdated(new Date().toISOString());
-
-        // eslint-disable-next-line no-console
-        console.log('data updated', new Date().toISOString());
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('error fetch data', err);
-      }
-    }, 60000); // 60s
-
-    return () => clearInterval(interval);
+    console.log('HomePageContent mounted with initial data:', {
+      businessesCount: initialData.businesses.length,
+      categoriesCount: initialData.categories.length,
+      timestamp: initialData.timestamp,
+      currentTime: new Date().toISOString()
+    });
   }, []);
+
+
+  useEffect(() => {
+    console.log('Businesses data updated:', {
+      count: businesses.length,
+      firstBusiness: businesses[0]?.name,
+      timestamp: lastUpdated
+    });
+  }, [businesses, lastUpdated]);
+
+
+  useEffect(() => {
+    console.log('Categories data updated:', {
+      count: categories.length,
+      categories: categories.map(c => c.name)
+    });
+  }, [categories]);
 
   const filteredAndSortedBusinesses = businesses
     .filter(business => {
@@ -154,13 +115,7 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
         <div className="text-right mb-2">
           <span className="text-xs text-gray-500">
             Сүүлийн шинэчлэл: {new Date(lastUpdated).toLocaleString('mn-MN')}
-            <button 
-              onClick={refreshData}
-              disabled={loading}
-              className="ml-2 text-blue-600 hover:text-blue-800 text-xs disabled:opacity-50"
-            >
-              {loading ? 'Шинэчлэж байна...' : 'Шинэчлэх'}
-            </button>
+            {/* REMOVED: Refresh button */}
           </span>
         </div>
 
@@ -178,6 +133,7 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
             Бизнес, төрийн байгууллага, ТББ-уудын мэдээлэл
           </p>
         </div>
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             <div className="lg:col-span-2">
@@ -210,6 +166,17 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
               ))}
             </select>
 
+            <select
+              value={selectedType || ''}
+              onChange={(e) => setSelectedType(e.target.value || null)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="">Бүх төрөл</option>
+              <option value="business">Бизнес</option>
+              <option value="government">Төрийн байгууллага</option>
+              <option value="npo">ТББ</option>
+            </select>
+
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -232,6 +199,14 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
           <div className="flex flex-wrap gap-4 mt-4">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Эрэмбэлэх:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'name' | 'createdAt')}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              >
+                <option value="name">Нэр</option>
+                <option value="createdAt">Үүсгэсэн огноо</option>
+              </select>
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
@@ -265,7 +240,7 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
           ))}
         </div>
 
-        {filteredAndSortedBusinesses.length === 0 && !loading && (
+        {filteredAndSortedBusinesses.length === 0 && (
           <div className="text-center py-16">
             <div className="max-w-md mx-auto">
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

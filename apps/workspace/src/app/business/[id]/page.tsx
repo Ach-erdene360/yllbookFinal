@@ -1,4 +1,4 @@
-const SERVER_IP = process.env.PUBLIC_SERVER_IP;
+const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 
 interface Business {
   id: number;

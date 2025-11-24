@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import HomePageContent from '@/app/components/HomePageClient/page';
-const SERVER_IP = process.env.PUBLIC_SERVER_IP;
+const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 interface Category {
   id: number;
   name: string;

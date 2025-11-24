@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-const SERVER_IP = process.env.PUBLIC_SERVER_IP;
+const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 interface Category {
   id: number;
   name: string;

@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import CacheHandler from '../lib/cacheHandler';
 
 const cache = new CacheHandler();
-const SERVER_IP = process.env.PUBLIC_SERVER_IP;
+const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 export default async function (fastify: FastifyInstance) {
   fastify.get('/', async function () {
     return { message: 'Hello API fffff' };

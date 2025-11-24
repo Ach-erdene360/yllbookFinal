@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
 
-const SERVER_IP = process.env.PUBLIC_SERVER_IP;
+const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 
 export async function POST(request) {
   try {

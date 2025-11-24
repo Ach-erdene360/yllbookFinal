@@ -40,16 +40,26 @@ interface HomePageContentProps {
 }
 
 export default function HomePageContent({ initialData }: HomePageContentProps) {
-  const [businesses, _setBusinesses] = useState<any[]>(initialData.businesses);
-  const [categories, _setCategories] = useState<Category[]>(initialData.categories);
+  // const [businesses, _setBusinesses] = useState<any[]>(initialData.businesses);
+  // const [categories, _setCategories] = useState<Category[]>(initialData.categories);
+  // const [search, setSearch] = useState('');
+  // const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  // const [selectedType, setSelectedType] = useState<string | null>(null);
+  // const [locationFilter, setLocationFilter] = useState<string>('');
+  // const [sortBy, setSortBy] = useState<'name' | 'createdAt'>('name');
+  // const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  // const [lastUpdated, _setLastUpdated] = useState<string>(initialData.timestamp);
+  // const [error, _setError] = useState<string | null>(initialData.error);
+  const businesses = initialData?.businesses || [];
+  const categories = initialData?.categories || [];
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'name' | 'createdAt'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [lastUpdated, _setLastUpdated] = useState<string>(initialData.timestamp);
-  const [error, _setError] = useState<string | null>(initialData.error);
+  const lastUpdated = initialData?.timestamp || new Date().toISOString();
+  const error = initialData?.error || null;
 
   useEffect(() => {
     console.log('HomePageContent mounted with initial data:', {

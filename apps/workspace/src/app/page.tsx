@@ -1,29 +1,29 @@
 import { Suspense } from 'react';
 import HomePageContent from '@/app/components/HomePageClient/page';
 const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
-interface Category {
-  id: number;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// interface Category {
+//   id: number;
+//   name: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
-interface Business {
-  id: number;
-  name: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  website?: string;
-  links?: any;
-  image?: string;
-  description?: string;
-  type: string;
-  categoryId: number;
-  createdAt: string;
-  updatedAt: string;
-  category: Category;
-}
+// interface Business {
+//   id: number;
+//   name: string;
+//   phone?: string;
+//   email?: string;
+//   address?: string;
+//   website?: string;
+//   links?: any;
+//   image?: string;
+//   description?: string;
+//   type: string;
+//   categoryId: number;
+//   createdAt: string;
+//   updatedAt: string;
+//   category: Category;
+// }
 
 async function fetchBackendData() {
   try {

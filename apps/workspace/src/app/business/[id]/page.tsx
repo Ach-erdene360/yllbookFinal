@@ -29,27 +29,28 @@ interface Business {
 }
 
 export async function generateStaticParams() {
-  // During build in Docker, fallback to mock data
-  if (!process.env.NEXT_PUBLIC_SERVER_IP) {
-    console.warn('[SSG] SERVER_IP not defined, using fallback mock data.');
-    return Array.from({ length: 10 }, (_, i) => ({ id: (i + 1).toString() }));
-  }
-
   try {
-    const response = await fetch(`http://${process.env.NEXT_PUBLIC_SERVER_IP}:3001/trpc/getAllBusinessesSimple`, {
-      next: { revalidate: 3600 }
+    console.log('[SSG] Generating static params for first 10 businesses...');
+    const response = await fetch(`http://${SERVER_IP}:3001/trpc/getAllBusinessesSimple`, {
+      next: { revalidate: 3600 } 
     });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
-    const businesses = data.result?.data || [];
-    return businesses.slice(0, 10).map((b: any) => ({ id: b.id.toString() }));
-  } catch (err) {
-    console.error('[SSG] Error fetching businesses:', err);
-    // fallback mock
-    return Array.from({ length: 10 }, (_, i) => ({ id: (i + 1).toString() }));
+    const businesses = data.result.data || [];
+    
+    console.log(`[SSG] Generated ${businesses.slice(0, 10).length} static business pages`);
+    return businesses.slice(0, 10).map((business: Business) => ({
+      id: business.id.toString(),
+    }));
+  } catch (error) {
+    console.error('[SSG] Error generating static params:', error);
+    return [];
   }
 }
-
 
 export const revalidate = 3600;
 

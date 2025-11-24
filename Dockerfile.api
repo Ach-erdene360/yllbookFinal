@@ -23,7 +23,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy built dist
-COPY --from=builder /workspace/dist/apps/api ./dist
+COPY --from=builder /workspace/apps/api ./dist
 
 # Copy package files
 COPY package.json package-lock.json ./

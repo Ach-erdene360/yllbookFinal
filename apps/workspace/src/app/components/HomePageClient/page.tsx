@@ -37,16 +37,16 @@ interface HomePageContentProps {
 }
 
 export default function HomePageContent({ initialData }: HomePageContentProps) {
-  const [businesses, setBusinesses] = useState<Business[]>(initialData.businesses);
-  const [categories, setCategories] = useState<Category[]>(initialData.categories);
+  const [businesses, _setBusinesses] = useState<Business[]>(initialData.businesses);
+  const [categories, _setCategories] = useState<Category[]>(initialData.categories);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'name' | 'createdAt'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [lastUpdated, setLastUpdated] = useState<string>(initialData.timestamp);
-  const [error, setError] = useState<string | null>(initialData.error);
+  const [lastUpdated, _setLastUpdated] = useState<string>(initialData.timestamp);
+  const [error, _setError] = useState<string | null>(initialData.error);
 
   useEffect(() => {
     console.log('HomePageContent mounted with initial data:', {

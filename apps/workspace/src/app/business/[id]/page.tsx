@@ -29,27 +29,24 @@ interface Business {
 }
 
 export async function generateStaticParams() {
+  // During build in Docker, fallback to mock data
+  if (!process.env.NEXT_PUBLIC_SERVER_IP) {
+    console.warn('[SSG] SERVER_IP not defined, using fallback mock data.');
+    return Array.from({ length: 10 }, (_, i) => ({ id: (i + 1).toString() }));
+  }
+
   try {
-    console.log('[SSG] Generating static params for first 10 businesses...');
-    
-    // If SERVER_IP is undefined (e.g., in Docker build), skip fetch
-    if (!SERVER_IP) {
-      console.warn('[SSG] SERVER_IP not defined, using fallback.');
-      return [];
-    }
-
-    const response = await fetch(`http://${SERVER_IP}:3001/trpc/getAllBusinessesSimple`, {
-      next: { revalidate: 3600 },
+    const response = await fetch(`http://${process.env.NEXT_PUBLIC_SERVER_IP}:3001/trpc/getAllBusinessesSimple`, {
+      next: { revalidate: 3600 }
     });
-
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
     const data = await response.json();
     const businesses = data.result?.data || [];
-    return businesses.slice(0, 10).map((b: Business) => ({ id: b.id.toString() }));
-  } catch (error) {
-    console.error('[SSG] Error generating static params:', error);
-    return []; // fallback empty array
+    return businesses.slice(0, 10).map((b: any) => ({ id: b.id.toString() }));
+  } catch (err) {
+    console.error('[SSG] Error fetching businesses:', err);
+    // fallback mock
+    return Array.from({ length: 10 }, (_, i) => ({ id: (i + 1).toString() }));
   }
 }
 
@@ -58,25 +55,28 @@ export const revalidate = 3600;
 
 async function getBusiness(id: string): Promise<Business | null> {
   try {
-    if (!SERVER_IP) {
-      console.warn('[DATA] SERVER_IP not defined, returning fallback.');
-      return null;
-    }
-
+    console.log(`[DATA] Fetching FRESH business data for ID: ${id}`);
     const response = await fetch(`http://${SERVER_IP}:3001/trpc/getBusinessById?input=${id}`, {
-      next: { revalidate: 3600, tags: [`business-${id}`] },
+      next: { 
+        revalidate: 3600,
+        tags: [`business-${id}`]
+      }
     });
-
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
-    return data.result?.data || null;
+    const business = data.result.data;
+    
+    console.log(`✅ [DATA] Successfully fetched business: ${business?.name}`);
+    return business;
   } catch (error) {
     console.error('[DATA] Error fetching business:', error);
     return null;
   }
 }
-
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const business = await getBusiness(params.id);

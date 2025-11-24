@@ -1,0 +1,26 @@
+# ===== BUILDER =====
+FROM node:18-alpine AS builder
+WORKDIR /workspace
+
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
+
+COPY . .
+
+# Build the Next.js frontend using Nx
+RUN npx nx build @workspace/workspace
+
+# ===== RUNNER =====
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copy static standalone Next.js output
+COPY --from=builder /workspace/dist/apps/workspace ./dist
+
+# Install only production deps
+COPY package.json package-lock.json ./
+RUN npm ci --production --legacy-peer-deps
+
+EXPOSE 3000
+CMD ["npx", "serve", "-s", "dist"]

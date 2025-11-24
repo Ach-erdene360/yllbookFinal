@@ -1,17 +1,15 @@
+// lib/cacheHandler.ts
 import { promises as fs } from 'fs';
 import path from 'path';
 
 const CACHE_DIR = path.resolve('.cache');
 const TAGS_MANIFEST = path.join(CACHE_DIR, 'tags-manifest.json');
 
-// ensure cache dir exists
 (async () => {
   try {
     await fs.mkdir(CACHE_DIR, { recursive: true });
-    // eslint-disable-next-line no-console
     console.log('Cache directory ready at', CACHE_DIR);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error('Failed to create cache dir', err);
   }
 })();
@@ -52,34 +50,25 @@ export default class CacheHandler {
     try {
       const data = await fs.readFile(filePath, 'utf8');
       const entry = JSON.parse(data);
-      const { value, lastModified } = entry;
-
-      let cacheTags = entry.tags;
-
-      if (
-        (!cacheTags || cacheTags.length === 0) &&
-        value &&
-        value.headers &&
-        value.headers['x-next-cache-tags']
-      ) {
-        cacheTags = value.headers['x-next-cache-tags'].split(',');
-      }
+      const { value, lastModified, ttl } = entry;
 
       const tagsManifest = await loadTagsManifest();
 
-      // Check if any tags have been revalidated after the cache entry
-      let isStale = false;
-      for (const tag of cacheTags || []) {
-        const tagData = tagsManifest.items[tag];
-        if (tagData && tagData.revalidatedAt > lastModified) {
-          isStale = true;
-          // eslint-disable-next-line no-console
-          console.log(`Cache key ${key} is stale due to tag ${tag}`);
-          break;
-        }
+      // TTL check
+      if (ttl && lastModified + ttl < Date.now()) {
+        console.log(`Cache key ${key} expired due to TTL`);
+        return null;
       }
 
-      if (isStale) return null;
+      // Tag revalidation check
+      const cacheTags = entry.tags || [];
+      for (const tag of cacheTags) {
+        const tagData = tagsManifest.items[tag];
+        if (tagData && tagData.revalidatedAt > lastModified) {
+          console.log(`Cache key ${key} is stale due to tag ${tag}`);
+          return null;
+        }
+      }
 
       return { lastModified, value };
     } catch (err) {
@@ -87,9 +76,8 @@ export default class CacheHandler {
     }
   }
 
-  async set(key: string, data: any, ctx: { tags?: string[] } = {}) {
+  async set(key: string, data: any, ctx: { tags?: string[]; ttl?: number } = {}) {
     let tags = ctx.tags || [];
-
     if (data && data.headers && data.headers['x-next-cache-tags']) {
       const headerTags = data.headers['x-next-cache-tags'].split(',');
       tags = [...new Set([...tags, ...headerTags])];
@@ -99,15 +87,14 @@ export default class CacheHandler {
       value: data,
       lastModified: Date.now(),
       tags,
+      ttl: ctx.ttl ? ctx.ttl * 1000 : undefined, // TTL in milliseconds
     };
 
     const filePath = this.getFilePath(key);
     try {
       await fs.writeFile(filePath, JSON.stringify(entry));
-      // eslint-disable-next-line no-console
       console.log(`Cached key: ${key}`);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to write cache entry for', key, err);
     }
   }
@@ -117,7 +104,6 @@ export default class CacheHandler {
     const now = Date.now();
     for (const tag of tagsArray) {
       await updateTagsManifest(tag, now);
-      // eslint-disable-next-line no-console
       console.log(`Tag revalidated: ${tag} at ${new Date(now).toISOString()}`);
     }
   }

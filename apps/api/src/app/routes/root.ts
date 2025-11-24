@@ -3,27 +3,47 @@ import CacheHandler from '../lib/cacheHandler';
 
 const cache = new CacheHandler();
 const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
+const TTL_SECONDS = 60; // cache refresh interval
+
 export default async function (fastify: FastifyInstance) {
   fastify.get('/', async function () {
     return { message: 'Hello API fffff' };
   });
 
-  fastify.get('/cached/businesses', async function (request, reply) {
-    const key = 'all-businesses';
+  // helper function to handle fetching and caching
+  async function fetchAndCache(key: string, url: string, tag: string) {
     const cached = await cache.get(key);
-    if (cached) {
-      reply.header('X-Cache', 'HIT');
-      return cached.value;
+    const now = Date.now();
+    const isStale = !cached || (cached.lastModified + TTL_SECONDS * 1000 < now);
+
+    if (cached && !isStale) {
+      return { value: cached.value, status: 'HIT' };
     }
 
     try {
-      const res = await fetch(`http://${SERVER_IP}:3001/trpc/getAllBusinessesSimple`);
+      const res = await fetch(url);
       const data = await res.json();
 
-      await cache.set(key, data, { tags: ['businesses'] });
+      // store data in cache
+      await cache.set(key, data, { tags: [tag] });
 
-      reply.header('X-Cache', 'MISS');
-      return data;
+      return { value: data, status: cached ? 'STALE-REVALIDATED' : 'MISS' };
+    } catch (err) {
+      // if backend fails but cache exists, return stale data
+      if (cached) return { value: cached.value, status: 'STALE' };
+      throw err;
+    }
+  }
+
+  fastify.get('/cached/businesses', async function (request, reply) {
+    try {
+      const { value, status } = await fetchAndCache(
+        'all-businesses',
+        `http://${SERVER_IP}:3001/trpc/getAllBusinessesSimple`,
+        'businesses'
+      );
+      reply.header('X-Cache', status);
+      return value;
     } catch (err) {
       reply.code(500);
       return { error: 'Failed to fetch backend' };
@@ -31,25 +51,17 @@ export default async function (fastify: FastifyInstance) {
   });
 
   fastify.get('/cached/categories', async function (request, reply) {
-    const key = 'all-categories';
-    const cached = await cache.get(key);
-    if (cached) {
-      reply.header('X-Cache', 'HIT');
-      return cached.value;
-    }
-
     try {
-      const res = await fetch(`http://${SERVER_IP}:3001/trpc/getAllCategories`);
-      const data = await res.json();
-
-      await cache.set(key, data, { tags: ['categories'] });
-
-      reply.header('X-Cache', 'MISS');
-      return data;
+      const { value, status } = await fetchAndCache(
+        'all-categories',
+        `http://${SERVER_IP}:3001/trpc/getAllCategories`,
+        'categories'
+      );
+      reply.header('X-Cache', status);
+      return value;
     } catch (err) {
       reply.code(500);
       return { error: 'Failed to fetch backend' };
     }
   });
 }
-

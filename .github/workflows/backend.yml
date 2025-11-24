@@ -37,10 +37,10 @@ jobs:
         run: |
           docker build \
             -f Dockerfile.api \
-            -t ${{ secrets.ECR_REGISTRY }}/workspace-api:latest \
-            -t ${{ secrets.ECR_REGISTRY }}/workspace-api:${{ steps.vars.outputs.sha_tag }} .
+            -t 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-api:latest \
+            -t 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-api:${{ steps.vars.outputs.sha_tag }} .
 
       - name: Push Docker Images
         run: |
-          docker push ${{ secrets.ECR_REGISTRY }}/workspace-api:latest
-          docker push ${{ secrets.ECR_REGISTRY }}/workspace-api:${{ steps.vars.outputs.sha_tag }}
+          docker push 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-api:latest
+          docker push 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-api:${{ steps.vars.outputs.sha_tag }}

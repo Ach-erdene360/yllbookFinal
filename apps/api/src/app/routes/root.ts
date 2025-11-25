@@ -3,14 +3,12 @@ import CacheHandler from '../lib/cacheHandler';
 
 const cache = new CacheHandler();
 const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
-const TTL_SECONDS = 60; // cache refresh interval
-
+const TTL_SECONDS = 60;
 export default async function (fastify: FastifyInstance) {
   fastify.get('/', async function () {
     return { message: 'Hello API fffff' };
   });
 
-  // helper function to handle fetching and caching
   async function fetchAndCache(key: string, url: string, tag: string) {
     const cached = await cache.get(key);
     const now = Date.now();
@@ -23,13 +21,10 @@ export default async function (fastify: FastifyInstance) {
     try {
       const res = await fetch(url);
       const data = await res.json();
-
-      // store data in cache
       await cache.set(key, data, { tags: [tag] });
 
       return { value: data, status: cached ? 'STALE-REVALIDATED' : 'MISS' };
     } catch (err) {
-      // if backend fails but cache exists, return stale data
       if (cached) return { value: cached.value, status: 'STALE' };
       throw err;
     }

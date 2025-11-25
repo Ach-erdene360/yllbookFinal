@@ -137,7 +137,7 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
 
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Монголын бизнесийн лавлах
+            Монголын бизнесийн лавлахххх
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Бизнес, төрийн байгууллага, ТББ-уудын мэдээлэл

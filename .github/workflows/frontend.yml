@@ -1,46 +1,88 @@
-name: Frontend Web CI/CD
+name: Build & Push Docker Images to ECR
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
     paths:
+      - "apps/api/**"
       - "apps/workspace/**"
       - "libs/**"
+      - "Dockerfile.api"
       - "Dockerfile.web"
       - "package.json"
       - "nx.json"
       - "tsconfig.json"
 
-jobs:
-  build-and-push-web:
-    runs-on: ubuntu-latest
+permissions:
+  id-token: write       # Required for OIDC
+  contents: read        # Required for checkout
 
+env:
+  AWS_REGION: us-east-1
+  ECR_API_REPO: 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-api
+  ECR_WEB_REPO: 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-workspace
+
+jobs:
+  build-and-push-backend:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::179459139528:role/github.to.aws.oicd
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Set image tags
+      - name: Set backend image tag
         id: vars
         run: echo "sha_tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
-      - name: Build Docker Image (Web)
+      - name: Build Docker Image (Backend)
+        run: |
+          docker build \
+            -f Dockerfile.api \
+            -t ${{ env.ECR_API_REPO }}:latest \
+            -t ${{ env.ECR_API_REPO }}:${{ steps.vars.outputs.sha_tag }} .
+
+      - name: Push Docker Image (Backend)
+        run: |
+          docker push ${{ env.ECR_API_REPO }}:latest
+          docker push ${{ env.ECR_API_REPO }}:${{ steps.vars.outputs.sha_tag }}
+
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    needs: build-and-push-backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::179459139528:role/github.to.aws.oicd
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set frontend image tag
+        id: vars
+        run: echo "sha_tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker Image (Frontend)
         run: |
           docker build \
             -f Dockerfile.web \
-            -t 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-workspace:latest \
-            -t 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-workspace:${{ steps.vars.outputs.sha_tag }} .
+            -t ${{ env.ECR_WEB_REPO }}:latest \
+            -t ${{ env.ECR_WEB_REPO }}:${{ steps.vars.outputs.sha_tag }} .
 
-      - name: Push Docker Images
+      - name: Push Docker Image (Frontend)
         run: |
-          docker push 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-workspace:latest
-          docker push 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-workspace:${{ steps.vars.outputs.sha_tag }}
+          docker push ${{ env.ECR_WEB_REPO }}:latest
+          docker push ${{ env.ECR_WEB_REPO }}:${{ steps.vars.outputs.sha_tag }}

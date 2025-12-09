@@ -68,7 +68,7 @@ export default function EditProfilePage() {
     });
 
     // Категориуд авах
-    fetch(`http://${SERVER_IP}:3001/trpc/getAllCategories`)
+    fetch(`http://${SERVER_IP}/trpc/getAllCategories`)
       .then(res => res.json())
       .then(data => setCategories(data.result.data || []));
   }, [router]);
@@ -103,7 +103,7 @@ export default function EditProfilePage() {
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`http://${SERVER_IP}:3001/trpc/updateBusiness`, {
+      const response = await fetch(`http://${SERVER_IP}/trpc/updateBusiness`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

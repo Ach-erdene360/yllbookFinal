@@ -15,7 +15,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`http://${SERVER_IP}:3001/trpc/loginBusiness`, {
+      const response = await fetch(`http://${SERVER_IP}/trpc/loginBusiness`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

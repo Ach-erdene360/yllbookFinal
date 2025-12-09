@@ -26,7 +26,7 @@ export default function RegisterPage() {
   });
 
   useState(() => {
-    fetch(`http://${SERVER_IP}:3001/trpc/getAllCategories`)
+    fetch(`http://${SERVER_IP}/trpc/getAllCategories`)
       .then(res => res.json())
       .then(data => setCategories(data.result.data || []));
   });
@@ -42,7 +42,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   try {
-    const response = await fetch(`http://${SERVER_IP}:3001/trpc/createBusiness`, {
+    const response = await fetch(`http://${SERVER_IP}/trpc/createBusiness`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

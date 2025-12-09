@@ -18,12 +18,46 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: backend-service-external
+  namespace: yellowbooks
+  labels:
+    app: backend
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 4000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: frontend-service
   namespace: yellowbooks
   labels:
     app: frontend
 spec:
   type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service-external
+  namespace: yellowbooks
+  labels:
+    app: frontend
+spec:
+  type: LoadBalancer
   selector:
     app: frontend
   ports:

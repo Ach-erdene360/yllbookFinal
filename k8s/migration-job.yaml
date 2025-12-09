@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prisma-migration
+  namespace: yellowbooks
+  labels:
+    app: migration
+spec:
+  ttlSecondsAfterFinished: 600  # Clean up job 10 minutes after completion
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: migration
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migration
+          image: 179459139528.dkr.ecr.us-east-1.amazonaws.com/workspace-api:latest
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting Prisma migration..."
+              cd /app/dist
+              npx prisma migrate deploy
+              echo "Migration completed successfully"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: yellowbooks-secrets
+                  key: database-url
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+---
+# Secret template - Create this manually or via kubectl
+# kubectl create secret generic yellowbooks-secrets \
+#   --from-literal=database-url="postgresql://user:password@host:5432/dbname" \
+#   -n yellowbooks
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yellowbooks-secrets
+  namespace: yellowbooks
+type: Opaque
+stringData:
+  # REPLACE WITH YOUR ACTUAL DATABASE URL
+  database-url: "postgresql://username:password@rds-endpoint:5432/yellowbooks"

@@ -27,7 +27,7 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: NEXT_PUBLIC_API_URL
-          value: "https://yellowbooks.yourdomain.com"
+          value: "http://aef0209e2a89649139a66e965c376384-2001567419.us-east-1.elb.amazonaws.com"
         - name: PORT
           value: "3000"
         resources:

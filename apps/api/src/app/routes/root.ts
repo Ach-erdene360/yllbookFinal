@@ -39,7 +39,7 @@ export default async function (fastify: FastifyInstance) {
     try {
       const { value, status } = await fetchAndCache(
         'all-businesses',
-        `http://${SERVER_IP}:3001/trpc/getAllBusinessesSimple`,
+        `http://${SERVER_IP}/trpc/getAllBusinessesSimple`,
         'businesses'
       );
       reply.header('X-Cache', status);
@@ -54,7 +54,7 @@ export default async function (fastify: FastifyInstance) {
     try {
       const { value, status } = await fetchAndCache(
         'all-categories',
-        `http://${SERVER_IP}:3001/trpc/getAllCategories`,
+        `http://${SERVER_IP}/trpc/getAllCategories`,
         'categories'
       );
       reply.header('X-Cache', status);

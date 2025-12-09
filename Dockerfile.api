@@ -25,10 +25,8 @@ ENV NODE_ENV=production
 # Copy built dist from builder
 COPY --from=builder /workspace/dist/apps/api ./dist
 
-# Copy Prisma schema and generated client
+# Copy Prisma schema
 COPY --from=builder /workspace/apps/api/prisma ./prisma
-COPY --from=builder /workspace/apps/api/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /workspace/node_modules/.prisma ./node_modules/.prisma
 
 # Copy package files
 COPY --from=builder /workspace/package.json ./package.json
@@ -38,7 +36,10 @@ COPY --from=builder /workspace/package-lock.json ./package-lock.json
 RUN npm ci --production --legacy-peer-deps
 
 # Install Prisma CLI for migrations
-RUN npm install prisma --save-dev
+RUN npm install prisma @prisma/client --save
+
+# Generate Prisma Client in production
+RUN npx prisma generate --schema=./prisma/schema.prisma
 
 EXPOSE 4000
 

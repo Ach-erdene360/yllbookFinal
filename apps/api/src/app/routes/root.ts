@@ -9,6 +9,11 @@ export default async function (fastify: FastifyInstance) {
     return { message: 'Hello API fffff' };
   });
 
+  // Health check endpoint for Kubernetes
+  fastify.get('/api/health', async function () {
+    return { status: 'ok', timestamp: new Date().toISOString() };
+  });
+
   async function fetchAndCache(key: string, url: string, tag: string) {
     const cached = await cache.get(key);
     const now = Date.now();

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import HomePageContent from '@/app/components/HomePageClient/page';
 const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
+// DEPLOYMENT TEST - EKS Production Ready! 🚀
 // interface Category {
 //   id: number;
 //   name: string;

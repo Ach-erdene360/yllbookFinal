@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::179459139528:role/eksctl-yellowbook-cluster-nodegrou-NodeInstanceRole-8CD6Kv6y8WWC
+      groups:
+      - system:bootstrappers
+      - system:nodes
+      username: system:node:{{EC2PrivateDNSName}}
+    - rolearn: arn:aws:iam::179459139528:role/github.to.aws.oicd
+      username: github-actions
+      groups:
+      - system:masters

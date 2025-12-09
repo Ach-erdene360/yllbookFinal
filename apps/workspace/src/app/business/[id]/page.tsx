@@ -1,4 +1,4 @@
-const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 interface Business {
   id: number;
@@ -31,7 +31,7 @@ interface Business {
 export async function generateStaticParams() {
   try {
     console.log('[SSG] Generating static params for first 10 businesses...');
-    const response = await fetch(`http://${SERVER_IP}/trpc/getAllBusinessesSimple`, {
+    const response = await fetch(`${API_URL}/trpc/getAllBusinessesSimple`, {
       next: { revalidate: 3600 } 
     });
     
@@ -57,7 +57,7 @@ export const revalidate = 3600;
 async function getBusiness(id: string): Promise<Business | null> {
   try {
     console.log(`[DATA] Fetching FRESH business data for ID: ${id}`);
-    const response = await fetch(`http://${SERVER_IP}/trpc/getBusinessById?input=${id}`, {
+    const response = await fetch(`${API_URL}/trpc/getBusinessById?input=${id}`, {
       next: { 
         revalidate: 3600,
         tags: [`business-${id}`]

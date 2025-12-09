@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 interface Category {
   id: number;
   name: string;
@@ -68,7 +68,7 @@ export default function EditProfilePage() {
     });
 
     // Категориуд авах
-    fetch(`http://${SERVER_IP}/trpc/getAllCategories`)
+    fetch(`${API_URL}/trpc/getAllCategories`)
       .then(res => res.json())
       .then(data => setCategories(data.result.data || []));
   }, [router]);
@@ -103,7 +103,7 @@ export default function EditProfilePage() {
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`http://${SERVER_IP}/trpc/updateBusiness`, {
+      const response = await fetch(`${API_URL}/trpc/updateBusiness`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`http://${SERVER_IP}/trpc/loginBusiness`, {
+      const response = await fetch(`${API_URL}/trpc/loginBusiness`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

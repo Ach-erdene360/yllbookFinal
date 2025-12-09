@@ -13,6 +13,8 @@ on:
       - "package.json"
       - "nx.json"
       - "tsconfig.json"
+      - ".env"
+  workflow_dispatch:  # Allow manual trigger
 
 permissions:
   id-token: write       # Required for OIDC

@@ -29,10 +29,10 @@ const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 async function fetchBackendData() {
   try {
     const [categoriesResponse, businessesResponse] = await Promise.all([
-      fetch(`http://${SERVER_IP}:3001/cached/categories`, {
+      fetch(`http://${SERVER_IP}/cached/categories`, {
         next: { revalidate: 60 } 
       }),
-      fetch(`http://${SERVER_IP}:3001/cached/businesses`, {
+      fetch(`http://${SERVER_IP}/cached/businesses`, {
         next: { revalidate: 60 } 
       })
     ]);

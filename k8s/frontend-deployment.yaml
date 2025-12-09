@@ -28,6 +28,8 @@ spec:
           value: "production"
         - name: NEXT_PUBLIC_API_URL
           value: "http://aef0209e2a89649139a66e965c376384-2001567419.us-east-1.elb.amazonaws.com"
+        - name: NEXT_PUBLIC_SERVER_IP
+          value: "backend-service:4000"
         - name: PORT
           value: "3000"
         resources:

@@ -34,7 +34,7 @@ spec:
               name: yellowbooks-secrets
               key: database-url
         - name: NEXT_PUBLIC_SERVER_IP
-          value: "backend-service"
+          value: "localhost:4000"
         resources:
           requests:
             cpu: "250m"

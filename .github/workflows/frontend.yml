@@ -88,62 +88,62 @@ jobs:
           docker push ${{ env.ECR_WEB_REPO }}:latest
           docker push ${{ env.ECR_WEB_REPO }}:${{ steps.vars.outputs.sha_tag }}
 
-  deploy-to-eks:
-    runs-on: ubuntu-latest
-    needs: [build-and-push-backend, build-and-push-frontend]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # deploy-to-eks:
+  #   runs-on: ubuntu-latest
+  #   needs: [build-and-push-backend, build-and-push-frontend]
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::179459139528:role/github.to.aws.oicd
-          aws-region: ${{ env.AWS_REGION }}
+  #     - name: Configure AWS Credentials via OIDC
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         role-to-assume: arn:aws:iam::179459139528:role/github.to.aws.oicd
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
+  #     - name: Install kubectl
+  #       uses: azure/setup-kubectl@v3
+  #       with:
+  #         version: 'latest'
 
-      - name: Configure kubectl for EKS
-        run: |
-          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+  #     - name: Configure kubectl for EKS
+  #       run: |
+  #         aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      - name: Create namespace if not exists
-        run: |
-          kubectl create namespace yellowbooks --dry-run=client -o yaml | kubectl apply -f -
+  #     - name: Create namespace if not exists
+  #       run: |
+  #         kubectl create namespace yellowbooks --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Run Database Migration Job
-        run: |
-          kubectl apply -f k8s/migration-job.yaml
-          kubectl wait --for=condition=complete --timeout=300s job/prisma-migration -n yellowbooks || true
+  #     - name: Run Database Migration Job
+  #       run: |
+  #         kubectl apply -f k8s/migration-job.yaml
+  #         kubectl wait --for=condition=complete --timeout=300s job/prisma-migration -n yellowbooks || true
 
-      - name: Deploy Backend
-        run: |
-          kubectl apply -f k8s/backend-deployment.yaml
-          kubectl rollout status deployment/backend -n yellowbooks --timeout=300s
+  #     - name: Deploy Backend
+  #       run: |
+  #         kubectl apply -f k8s/backend-deployment.yaml
+  #         kubectl rollout status deployment/backend -n yellowbooks --timeout=300s
 
-      - name: Deploy Frontend
-        run: |
-          kubectl apply -f k8s/frontend-deployment.yaml
-          kubectl rollout status deployment/frontend -n yellowbooks --timeout=300s
+  #     - name: Deploy Frontend
+  #       run: |
+  #         kubectl apply -f k8s/frontend-deployment.yaml
+  #         kubectl rollout status deployment/frontend -n yellowbooks --timeout=300s
 
-      - name: Deploy Services
-        run: kubectl apply -f k8s/services.yaml
+  #     - name: Deploy Services
+  #       run: kubectl apply -f k8s/services.yaml
 
-      - name: Deploy HPA
-        run: kubectl apply -f k8s/hpa.yaml
+  #     - name: Deploy HPA
+  #       run: kubectl apply -f k8s/hpa.yaml
 
-      - name: Deploy Ingress
-        run: kubectl apply -f k8s/ingress.yaml
+  #     - name: Deploy Ingress
+  #       run: kubectl apply -f k8s/ingress.yaml
 
-      - name: Check Deployment Status
-        run: |
-          echo "=== Pods Status ==="
-          kubectl get pods -n yellowbooks
-          echo "=== Services ==="
-          kubectl get svc -n yellowbooks
-          echo "=== Ingress ==="
-          kubectl get ingress -n yellowbooks
+  #     - name: Check Deployment Status
+  #       run: |
+  #         echo "=== Pods Status ==="
+  #         kubectl get pods -n yellowbooks
+  #         echo "=== Services ==="
+  #         kubectl get svc -n yellowbooks
+  #         echo "=== Ingress ==="
+  #         kubectl get ingress -n yellowbooks
 

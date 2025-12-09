@@ -15,12 +15,12 @@ FROM node:18-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Copy static standalone Next.js output
-COPY --from=builder /workspace/apps/workspace ./dist
+# Copy the entire built workspace app with .next folder
+COPY --from=builder /workspace/dist/apps/workspace ./
+COPY --from=builder /workspace/node_modules ./node_modules
 
-# Install only production deps
-COPY package.json package-lock.json ./
-RUN npm ci --production --legacy-peer-deps
+# Copy package.json for Next.js to run
+COPY --from=builder /workspace/apps/workspace/package.json ./package.json
 
 EXPOSE 3000
-CMD ["npx", "serve", "-s", "dist"]
+CMD ["npx", "next", "start"]

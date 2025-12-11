@@ -1,6 +1,7 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import prisma from '../lib/prisma';
+import { searchBusinessesWithAI } from '../lib/aiSearch';
 
 export const t = initTRPC.create();
 
@@ -140,6 +141,17 @@ export const appRouter = t.router({
         where: { id },
         data,
       });
+    }),
+
+  // AI-powered semantic search
+  aiSearch: t.procedure
+    .input(
+      z.object({
+        query: z.string().min(1).max(500),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      return searchBusinessesWithAI(input.query, prisma);
     }),
 });
 

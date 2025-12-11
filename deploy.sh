@@ -15,7 +15,7 @@ kubectl wait --for=condition=complete --timeout=300s job/prisma-migration -n yel
 
 kubectl apply -f k8s/backend-deployment.yaml
 kubectl apply -f k8s/frontend-deployment.yaml
-kubectl apply -f k8s/services.yaml
+kubectl apply -f k8s/services.yaml  
 kubectl apply -f k8s/hpa.yaml
 kubectl apply -f k8s/ingress.yaml
 

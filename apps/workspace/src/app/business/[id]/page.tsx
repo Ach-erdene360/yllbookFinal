@@ -1,4 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// Use internal service URL for SSR, external URL for client-side
+const API_URL = typeof window === 'undefined' 
+  ? (process.env.NEXT_PUBLIC_SERVER_IP ? `http://${process.env.NEXT_PUBLIC_SERVER_IP}` : 'http://backend-service')
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
 
 interface Business {
   id: number;

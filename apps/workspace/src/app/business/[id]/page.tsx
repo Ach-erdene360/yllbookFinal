@@ -61,7 +61,7 @@ async function getBusiness(id: string): Promise<Business | null> {
   try {
     console.log(`[DATA] Fetching FRESH business data for ID: ${id}`);
     const numericId = parseInt(id, 10);
-    const response = await fetch(`${API_URL}/trpc/getBusinessById?input=${encodeURIComponent(JSON.stringify(numericId))}`, {
+    const response = await fetch(`${API_URL}/trpc/getBusinessById?input=${numericId}`, {
       next: { 
         revalidate: 3600,
         tags: [`business-${id}`]

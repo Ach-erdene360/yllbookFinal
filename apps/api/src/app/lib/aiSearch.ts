@@ -16,10 +16,19 @@ export async function getRedisClient() {
   return redisClient;
 }
 
-// OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// OpenAI client (lazy initialization)
+let openai: OpenAI | null = null;
+
+function getOpenAIClient() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is required for AI search');
+    }
+    openai = new OpenAI({ apiKey });
+  }
+  return openai;
+}
 
 // Calculate cosine similarity between two vectors
 function cosineSimilarity(a: number[], b: number[]): number {
@@ -42,7 +51,8 @@ export async function searchBusinessesWithAI(query: string, prisma: any) {
     }
     
     // Generate embedding for the query
-    const response = await openai.embeddings.create({
+    const client = getOpenAIClient();
+    const response = await client.embeddings.create({
       model: 'text-embedding-3-small',
       input: query,
     });
@@ -91,7 +101,8 @@ export async function searchBusinessesWithAI(query: string, prisma: any) {
       )
       .join('\n');
     
-    const gptResponse = await openai.chat.completions.create({
+    const client = getOpenAIClient();
+    const gptResponse = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {

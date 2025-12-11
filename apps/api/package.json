@@ -24,7 +24,9 @@
           "tsConfig": "apps/api/tsconfig.app.json",
           "external": [
             "@prisma/client",
-            ".prisma/client"
+            ".prisma/client",
+            "openai",
+            "redis"
           ],
           "assets": [
             "apps/api/src/assets"

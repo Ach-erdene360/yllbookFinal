@@ -27,7 +27,7 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: NEXT_PUBLIC_API_URL
-          value: "http://addaf0840161a41ffb10911465acf1e8-874042476.us-east-1.elb.amazonaws.com"
+          value: "http://ac97608da09fe413eb5808b6dee7baf5-898470353.us-east-1.elb.amazonaws.com"
         - name: NEXT_PUBLIC_SERVER_IP
           value: "backend-service"
         - name: PORT

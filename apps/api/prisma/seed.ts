@@ -4,6 +4,19 @@ import { PrismaClient } from '../src/generated/prisma'
 const prisma = new PrismaClient()
 
 async function main() {
+  // Create admin user
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@yellowbooks.mn' },
+    update: {},
+    create: {
+      email: 'admin@yellowbooks.mn',
+      name: 'Admin User',
+      role: 'ADMIN',
+    },
+  })
+
+  console.log('✅ Admin user created:', adminUser.email)
+
   const categories = await Promise.all([
     prisma.category.create({ data: { name: 'Бизнесийн байгууллагууд' } }),
     prisma.category.create({ data: { name: 'Төрийн байгууллагууд' } }),

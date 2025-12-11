@@ -32,6 +32,27 @@ spec:
           value: "backend-service"
         - name: PORT
           value: "3000"
+        - name: NEXTAUTH_URL
+          value: "http://afcbf65fe5d96481b90d1d5345fbd5a0-1445315699.us-east-1.elb.amazonaws.com"
+        - name: NEXTAUTH_SECRET
+          value: "your-secret-key-change-this-in-production-min-32-chars"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: database-secret
+              key: DATABASE_URL
+        - name: GITHUB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: github-oauth-secret
+              key: GITHUB_CLIENT_ID
+              optional: true
+        - name: GITHUB_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: github-oauth-secret
+              key: GITHUB_CLIENT_SECRET
+              optional: true
         resources:
           requests:
             cpu: "100m"

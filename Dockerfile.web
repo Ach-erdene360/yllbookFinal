@@ -7,7 +7,12 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
+# Generate Prisma Client (needed for NextAuth)
+WORKDIR /workspace/apps/api
+RUN npx prisma generate
+
 # Build the Next.js frontend using Nx
+WORKDIR /workspace
 RUN npx nx build @workspace/workspace
 
 # ===== RUNNER =====

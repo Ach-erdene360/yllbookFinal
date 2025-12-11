@@ -51,8 +51,8 @@ export async function searchBusinessesWithAI(query: string, prisma: any) {
     }
     
     // Generate embedding for the query
-    const client = getOpenAIClient();
-    const response = await client.embeddings.create({
+    const openaiClient = getOpenAIClient();
+    const response = await openaiClient.embeddings.create({
       model: 'text-embedding-3-small',
       input: query,
     });
@@ -101,8 +101,8 @@ export async function searchBusinessesWithAI(query: string, prisma: any) {
       )
       .join('\n');
     
-    const client = getOpenAIClient();
-    const gptResponse = await client.chat.completions.create({
+    const gptClient = getOpenAIClient();
+    const gptResponse = await gptClient.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {

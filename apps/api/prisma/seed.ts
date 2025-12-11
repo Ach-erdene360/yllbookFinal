@@ -1,5 +1,5 @@
 
-import { PrismaClient } from '../src/generated/prisma'
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -17,13 +17,44 @@ async function main() {
 
   console.log('✅ Admin user created:', adminUser.email)
 
+  // Upsert categories to avoid duplicate errors
   const categories = await Promise.all([
-    prisma.category.create({ data: { name: 'Бизнесийн байгууллагууд' } }),
-    prisma.category.create({ data: { name: 'Төрийн байгууллагууд' } }),
-    prisma.category.create({ data: { name: 'ТББ' } }),
-    prisma.category.create({ data: { name: 'Элчин сайд, консулын газрууд' } }),
-    prisma.category.create({ data: { name: 'Аймаг, сумдын байгууллагууд' } }),
+    prisma.category.upsert({
+      where: { name: 'Бизнесийн байгууллагууд' },
+      update: {},
+      create: { name: 'Бизнесийн байгууллагууд' },
+    }),
+    prisma.category.upsert({
+      where: { name: 'Төрийн байгууллагууд' },
+      update: {},
+      create: { name: 'Төрийн байгууллагууд' },
+    }),
+    prisma.category.upsert({
+      where: { name: 'ТББ' },
+      update: {},
+      create: { name: 'ТББ' },
+    }),
+    prisma.category.upsert({
+      where: { name: 'Элчин сайд, консулын газрууд' },
+      update: {},
+      create: { name: 'Элчин сайд, консулын газрууд' },
+    }),
+    prisma.category.upsert({
+      where: { name: 'Аймаг, сумдын байгууллагууд' },
+      update: {},
+      create: { name: 'Аймаг, сумдын байгууллагууд' },
+    }),
   ])
+
+  console.log('✅ Categories ready')
+
+  // Check if businesses already exist before creating
+  const existingBusinesses = await prisma.business.count()
+  
+  if (existingBusinesses > 0) {
+    console.log('✅ Businesses already seeded, skipping...')
+    return
+  }
 
   await prisma.business.createMany({
     data: [

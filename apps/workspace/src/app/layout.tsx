@@ -46,8 +46,12 @@ export default function RootLayout({
                   <a href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                     Нүүр
                   </a>
-                  <a href="/assistant" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                    🤖 AI Ассистент
+                  <a 
+                    href="/assistant" 
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                  >
+                    <span className="text-lg">🤖</span>
+                    <span>AI Ассистент</span>
                   </a>
                   
                   {business ? (

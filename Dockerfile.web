@@ -13,6 +13,8 @@ RUN npx prisma generate
 
 # Build the Next.js frontend using Nx
 WORKDIR /workspace
+ARG NEXT_PUBLIC_API_URL=http://ac97608da09fe413eb5808b6dee7baf5-898470353.us-east-1.elb.amazonaws.com
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npx nx build @workspace/workspace
 
 # ===== RUNNER =====

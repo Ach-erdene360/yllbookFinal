@@ -83,6 +83,7 @@ jobs:
         run: |
           docker build \
             -f Dockerfile.web \
+            --build-arg NEXT_PUBLIC_API_URL=http://ac97608da09fe413eb5808b6dee7baf5-898470353.us-east-1.elb.amazonaws.com \
             -t ${{ env.ECR_WEB_REPO }}:latest \
             -t ${{ env.ECR_WEB_REPO }}:${{ steps.vars.outputs.sha_tag }} .
 

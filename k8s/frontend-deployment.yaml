@@ -41,13 +41,13 @@ spec:
             secretKeyRef:
               name: database-secret
               key: DATABASE_URL
-        - name: GITHUB_CLIENT_ID
+        - name: GITHUB_ID
           valueFrom:
             secretKeyRef:
               name: github-oauth-secret
               key: GITHUB_CLIENT_ID
               optional: true
-        - name: GITHUB_CLIENT_SECRET
+        - name: GITHUB_SECRET
           valueFrom:
             secretKeyRef:
               name: github-oauth-secret

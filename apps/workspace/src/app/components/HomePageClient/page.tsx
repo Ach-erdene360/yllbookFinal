@@ -139,9 +139,18 @@ export default function HomePageContent({ initialData }: HomePageContentProps) {
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
             Монголын бизнесийн лавлахххх
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
             Бизнес, төрийн байгууллага, ТББ-уудын мэдээлэл
           </p>
+          
+          {/* AI Assistant CTA */}
+          <a 
+            href="/assistant"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+          >
+            <span className="text-2xl">🤖</span>
+            <span>AI Ассистент - Асуулт асуугаарай!</span>
+          </a>
         </div>
 
         {/* Filters */}

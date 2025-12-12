@@ -15,13 +15,11 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, user }) {
-      // Load user role from database
       const dbUser = await prisma.user.findUnique({
         where: { id: user.id },
         select: { role: true },
       });
 
-      // Add role to session
       if (session.user) {
         session.user.id = user.id;
         session.user.role = dbUser?.role || "USER";
@@ -30,7 +28,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      // Auto-grant ADMIN role to admin@yellowbooks.mn
       if (user.email === "admin@yellowbooks.mn") {
         await prisma.user.update({
           where: { email: user.email },

@@ -46,6 +46,9 @@ export default function RootLayout({
                   <a href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                     Нүүр
                   </a>
+                  <a href="/assistant" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                    🤖 AI Ассистент
+                  </a>
                   
                   {business ? (
                     <>

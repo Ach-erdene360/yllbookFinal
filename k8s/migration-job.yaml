@@ -6,7 +6,7 @@ metadata:
   labels:
     app: migration
 spec:
-  ttlSecondsAfterFinished: 600  # Clean up job 10 minutes after completion
+  ttlSecondsAfterFinished: 600  
   backoffLimit: 3
   template:
     metadata:
@@ -42,10 +42,6 @@ spec:
               cpu: "500m"
               memory: "1Gi"
 ---
-# Secret template - Create this manually or via kubectl
-# kubectl create secret generic yellowbooks-secrets \
-#   --from-literal=database-url="postgresql://user:password@host:5432/dbname" \
-#   -n yellowbooks
 apiVersion: v1
 kind: Secret
 metadata:
@@ -53,5 +49,4 @@ metadata:
   namespace: yellowbooks
 type: Opaque
 stringData:
-  # REPLACE WITH YOUR ACTUAL DATABASE URL
   database-url: "postgresql://username:password@rds-endpoint:5432/yellowbooks"

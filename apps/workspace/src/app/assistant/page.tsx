@@ -65,7 +65,7 @@ export default function AssistantPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            🤖 AI Туслах
+             AI Туслах
           </h1>
           <p className="text-gray-600">
             Монголын бизнесийн мэдээллийг хиймэл оюун ухаанаар хайна уу
@@ -89,7 +89,7 @@ export default function AssistantPage() {
                 disabled={loading || !query.trim()}
                 className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
-                {loading ? '⏳ Хайж байна...' : '🔍 Хайх'}
+                {loading ? ' Хайж байна...' : ' Хайх'}
               </button>
             </div>
             
@@ -107,7 +107,7 @@ export default function AssistantPage() {
         {/* Error Message */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
-            <p className="text-red-800">❌ {error}</p>
+            <p className="text-red-800"> {error}</p>
           </div>
         )}
 
@@ -117,7 +117,7 @@ export default function AssistantPage() {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xl">
-                  🤖
+                  
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg text-gray-900 mb-2">
@@ -202,7 +202,7 @@ export default function AssistantPage() {
         {/* Info Section */}
         {!result && !loading && (
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="text-6xl mb-4">🤖✨</div>
+            <div className="text-6xl mb-4"></div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               AI-тай хамтран хайлт хийх
             </h3>

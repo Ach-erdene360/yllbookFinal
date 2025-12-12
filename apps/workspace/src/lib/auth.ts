@@ -28,7 +28,13 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      if (user.email === "admin@yellowbooks.mn") {
+      // Admin emails list - add your GitHub email here
+      const adminEmails = [
+        "admin@yellowbooks.mn",
+        "ach.erdene360@gmail.com", // Add your GitHub email
+      ];
+      
+      if (user.email && adminEmails.includes(user.email)) {
         await prisma.user.update({
           where: { email: user.email },
           data: { role: "ADMIN" },

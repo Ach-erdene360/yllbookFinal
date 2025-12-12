@@ -8,7 +8,6 @@ import cachedRoutes from './app/routes/root';
 
 const host = '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
-const SERVER_IP = process.env.NEXT_PUBLIC_SERVER_IP;
 const server = Fastify({
   logger: true,
   maxParamLength: 5000,
